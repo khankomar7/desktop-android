@@ -1,0 +1,20 @@
+services:
+  desktop:
+    build: .
+    container_name: claude-remote-desktop
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Tehran
+      # --- Performance tuning (override the Dockerfile defaults here if you want) ---
+      - MAX_RES=1920x1080          # clamp virtual display (default is a wasteful 16K)
+      - SELKIES_ENCODER=x264enc-striped  # low-latency video encoder
+      - SELKIES_FRAMERATE=30        # lower = smoother on weak connections
+      - SELKIES_H264_CRF=28         # higher = smaller/faster, lower = sharper
+    ports:
+      - "3000:3000"   # HTTP (noVNC / Selkies)
+      - "3001:3001"   # HTTPS
+    volumes:
+      - ./config:/config
+    restart: unless-stopped
+    shm_size: "2gb"

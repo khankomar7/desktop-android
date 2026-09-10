@@ -7,6 +7,7 @@
 ## قابلیت‌ها
 
 - دسکتاپ XFCE در مرورگر دسکتاپ و موبایل
+- تمرکز اصلی روی گوشی‌های Android با لمس، trackpad مجازی و keyboard روی صفحه
 - Claude Desktop از مخزن رسمی Anthropic
 - Claude Code از npm
 - نگهداری تنظیمات و home در volume مسیر `/config`
@@ -49,6 +50,28 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 | `CPU_LIMIT` | `2` | سقف CPU کانتینر |
 | `MEMORY_LIMIT` | `4G` | سقف RAM کانتینر |
 
+## تنظیمات Android
+
+پروفایل اصلی پروژه از ابتدا برای Android تنظیم شده است. در webtop/Selkies این امکانات برای گوشی نگه داشته شده‌اند:
+
+- **Trackpad mode** برای حرکت نرم‌تر و نسبی موس با یک انگشت
+- **Direct touch mode** برای برنامه‌های لمسی
+- **On-screen keyboard** برای تایپ بدون کیبورد فیزیکی
+- **Fullscreen** برای بیشترین فضای قابل استفاده
+- clipboard متنی برای کپی و paste بین گوشی و دسکتاپ
+
+برای کاهش شلوغی، مصرف اینترنت و سطح حمله، این قابلیت‌ها به‌صورت پیش‌فرض غیرفعال‌اند:
+
+- صدا و میکروفون
+- gamepad و gaming mode
+- file upload/download
+- session sharing و collaboration
+- binary clipboard
+- نمایشگر دوم
+- دکمه‌ها و بخش‌های غیرضروری sidebar
+
+برای حرکت نرم‌تر موس، ابتدا در sidebar حالت **Trackpad** را انتخاب کنید. برای برنامه‌هایی که خودشان touch-friendly هستند، **Direct touch** مناسب‌تر است. در صورت تارشدن متن، از بخش Screen scaling حالت CSS را بررسی کنید؛ این پروژه برای کاهش مصرف دیتا آن را به‌صورت پیش‌فرض فعال کرده است.
+
 برای موبایل یا شبکه‌ی ضعیف، این profile را امتحان کنید:
 
 ```env
@@ -57,6 +80,16 @@ SELKIES_FRAMERATE=24
 SELKIES_H264_CRF=30
 SELKIES_AUDIO_ENABLED=false
 ```
+
+اگر کیفیت بیشتری لازم دارید، فقط این موارد را افزایش دهید:
+
+```env
+MAX_RES=1920x1080
+SELKIES_FRAMERATE=30
+SELKIES_H264_CRF=28
+```
+
+افزایش هم‌زمان رزولوشن و frame rate روی اینترنت موبایل، latency و مصرف دیتا را زیاد می‌کند. برای استفاده‌ی روزمره‌ی Android، `1280x720` و ۲۴ فریم نقطه‌ی شروع پیشنهادی هستند.
 
 ## Railway و انتشار عمومی
 
@@ -68,7 +101,7 @@ SELKIES_AUDIO_ENABLED=false
 2. ترجیحاً سرویس را پشت Reverse Proxy با TLS معتبر قرار دهید.
 3. پورت HTTP یعنی `3000` را مستقیماً عمومی نکنید.
 4. WebSocket را فعال و proxy buffering را خاموش کنید.
-5. قابلیت‌هایی مانند clipboard، file transfer، microphone و session sharing را فقط در صورت نیاز فعال کنید.
+5. قابلیت‌های غیرفعال‌شده‌ی Android مانند file transfer و sharing را فقط در صورت نیاز و با آگاهی از ریسک فعال کنید.
 6. برای Railway سقف هزینه و resource limit تعیین کنید؛ این سرویس به‌دلیل encoding مداوم سبک نیست.
 
 webtop یک محیط دسکتاپ کامل با terminal و `sudo` بدون رمز داخل کانتینر فراهم می‌کند. بنابراین انتشار بدون سخت‌سازی مناسب خطرناک است. جزئیات بیشتر در [SECURITY.md](SECURITY.md) آمده است.

@@ -1,20 +1,38 @@
 services:
   desktop:
-    build: .
+    build:
+      context: .
+      args:
+        # Claude Desktop currently publishes an amd64 Linux package.
+        TARGETARCH: amd64
+    platform: linux/amd64
     container_name: claude-remote-desktop
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Tehran
-      # --- Performance tuning (override the Dockerfile defaults here if you want) ---
-      - MAX_RES=1920x1080          # clamp virtual display (default is a wasteful 16K)
-      - SELKIES_ENCODER=x264enc-striped  # low-latency video encoder
-      - SELKIES_FRAMERATE=30        # lower = smoother on weak connections
-      - SELKIES_H264_CRF=28         # higher = smaller/faster, lower = sharper
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-Asia/Tehran}
+      CUSTOM_USER: ${WEBTOP_USER:?Set WEBTOP_USER in .env or the deployment environment}
+      PASSWORD: ${WEBTOP_PASSWORD:?Set WEBTOP_PASSWORD in .env or the deployment environment}
+      MAX_RES: ${MAX_RES:-1920x1080}
+      SELKIES_ENCODER: ${SELKIES_ENCODER:-x264enc-striped}
+      SELKIES_FRAMERATE: ${SELKIES_FRAMERATE:-30}
+      SELKIES_H264_CRF: ${SELKIES_H264_CRF:-28}
+      SELKIES_AUDIO_ENABLED: ${SELKIES_AUDIO_ENABLED:-false}
     ports:
-      - "3000:3000"   # HTTP (noVNC / Selkies)
-      - "3001:3001"   # HTTPS
+      # HTTPS is the supported direct-access endpoint. Do not expose 3000 publicly.
+      - "${WEBTOP_HTTPS_BIND:-0.0.0.0}:3001:3001"
     volumes:
       - ./config:/config
     restart: unless-stopped
     shm_size: "2gb"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -kfsS https://localhost:3001/ >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "${CPU_LIMIT:-2}"
+          memory: ${MEMORY_LIMIT:-4G}

@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Compose files
+        run: |
+          docker compose --env-file .env.example config --quiet
+          docker compose --env-file .env.example -f docker-compose.yml -f docker-compose.dev.yml config --quiet
+
+      - name: Build amd64 image
+        run: docker build --platform linux/amd64 --tag claude-desktop-android:ci .
+
+      - name: Scan repository for accidental secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

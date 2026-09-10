@@ -1,5 +1,8 @@
 FROM lscr.io/linuxserver/webtop:ubuntu-xfce
 
+ARG TARGETARCH=amd64
+RUN test "$TARGETARCH" = "amd64" || (echo "Claude Desktop currently supports linux/amd64 only; received $TARGETARCH" >&2 && exit 1)
+
 LABEL maintainer="you"
 LABEL description="Browser-accessible Ubuntu XFCE desktop with Claude Desktop and Claude Code preinstalled"
 

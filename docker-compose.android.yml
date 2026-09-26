@@ -1,0 +1,52 @@
+# ============================================================================
+# Android-Optimized Docker Compose Configuration
+# ============================================================================
+# Use this file for fastest mobile desktop access on Android devices.
+# Run with: docker compose -f docker-compose.yml -f docker-compose.android.yml up -d
+#
+# This overlay adds Android-specific performance tuning:
+# - Ultra-low latency streaming parameters
+# - Optimized video encoder settings for mobile
+# - Disabled features that harm mobile experience
+# - Reduced memory/CPU footprint for efficient encoding
+# ============================================================================
+
+services:
+  desktop:
+    environment:
+      # Stream quality tuned for Android touch responsiveness
+      # These override docker-compose.yml defaults
+      MAX_RES: ${MAX_RES:-1280x720}          # 720p: readable, fast
+      SELKIES_FRAMERATE: ${SELKIES_FRAMERATE:-24}           # 24 fps: smooth touch
+      SELKIES_H264_CRF: ${SELKIES_H264_CRF:-30}   # Quality loss: fast encode
+      SELKIES_ENCODER: ${SELKIES_ENCODER:-x264enc-striped}  # Lowest latency
+
+      # Android input is touch-first
+      SELKIES_USE_CSS_SCALING: ${SELKIES_USE_CSS_SCALING:-true|locked}
+      SELKIES_USE_BROWSER_CURSORS: ${SELKIES_USE_BROWSER_CURSORS:-true|locked}
+      SELKIES_USE_PAINT_OVER_QUALITY: ${SELKIES_USE_PAINT_OVER_QUALITY:-true|locked}
+      SELKIES_FORCE_ALIGNED_RESOLUTION: ${SELKIES_FORCE_ALIGNED_RESOLUTION:-true|locked}
+
+      # Minimal UI: only essential controls on small mobile screens
+      SELKIES_UI_SHOW_CORE_BUTTONS: ${SELKIES_UI_SHOW_CORE_BUTTONS:-false|locked}
+      SELKIES_UI_SIDEBAR_SHOW_STATS: ${SELKIES_UI_SIDEBAR_SHOW_STATS:-false|locked}
+      SELKIES_UI_SIDEBAR_SHOW_FILES: ${SELKIES_UI_SIDEBAR_SHOW_FILES:-false|locked}
+      SELKIES_UI_SIDEBAR_SHOW_SHARING: ${SELKIES_UI_SIDEBAR_SHOW_SHARING:-false|locked}
+      SELKIES_UI_SIDEBAR_SHOW_GAMEPADS: ${SELKIES_UI_SIDEBAR_SHOW_GAMEPADS:-false|locked}
+      SELKIES_UI_SIDEBAR_SHOW_AUDIO_SETTINGS: ${SELKIES_UI_SIDEBAR_SHOW_AUDIO_SETTINGS:-false|locked}
+      SELKIES_UI_SIDEBAR_SHOW_GAMING_MODE: ${SELKIES_UI_SIDEBAR_SHOW_GAMING_MODE:-false|locked}
+
+      # Keep only essential controls visible
+      SELKIES_UI_SIDEBAR_SHOW_SCREEN_SETTINGS: ${SELKIES_UI_SIDEBAR_SHOW_SCREEN_SETTINGS:-true|locked}
+      SELKIES_UI_SIDEBAR_SHOW_VIDEO_SETTINGS: ${SELKIES_UI_SIDEBAR_SHOW_VIDEO_SETTINGS:-true|locked}
+      SELKIES_UI_SIDEBAR_SHOW_CLIPBOARD: ${SELKIES_UI_SIDEBAR_SHOW_CLIPBOARD:-true|locked}
+      SELKIES_UI_SIDEBAR_SHOW_TRACKPAD: ${SELKIES_UI_SIDEBAR_SHOW_TRACKPAD:-true|locked}
+      SELKIES_UI_SIDEBAR_SHOW_FULLSCREEN: ${SELKIES_UI_SIDEBAR_SHOW_FULLSCREEN:-true|locked}
+      SELKIES_UI_SIDEBAR_SHOW_KEYBOARD_BUTTON: ${SELKIES_UI_SIDEBAR_SHOW_KEYBOARD_BUTTON:-true|locked}
+
+    # Optimized resource limits for efficient streaming on mobile networks
+    deploy:
+      resources:
+        limits:
+          cpus: "${CPU_LIMIT:-2}"
+          memory: ${MEMORY_LIMIT:-2G}

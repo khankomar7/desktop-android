@@ -26,6 +26,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     npm install -g @anthropic-ai/claude-code && \
     rm -rf /var/lib/apt/lists/*
 
+# ---- Android perf tweaks (disable compositing/animations via autostart) ----
+COPY bin/android-perf.sh /usr/local/bin/android-perf.sh
+COPY autostart/android-perf.desktop /etc/xdg/autostart/android-perf.desktop
+RUN chmod +x /usr/local/bin/android-perf.sh
+
 # ---- Baked-in performance defaults (override anytime via Railway/compose env vars) ----
 # Clamp the virtual display so it isn't rendered at a wasteful 16K by default,
 # use a fast/low-latency encoder, and cap framerate for smoother mobile streaming.

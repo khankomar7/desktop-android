@@ -47,7 +47,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 | `SELKIES_FRAMERATE` | `30` | تعداد فریم برای stream |
 | `SELKIES_H264_CRF` | `28` | مقدار بیشتر یعنی حجم کمتر و کیفیت پایین‌تر |
 | `SELKIES_AUDIO_ENABLED` | `false` | ضبط صدا؛ در صورت نیاز فعال شود |
-| `CPU_LIMIT` | `2` | سقف CPU کانتینر |
+| `CPU_LIMIT` | `4` | سقف CPU کانتینر |
 | `MEMORY_LIMIT` | `4G` | سقف RAM کانتینر |
 
 ## تنظیمات Android
